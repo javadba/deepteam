@@ -1,0 +1,8 @@
+*.class
+*.log
+*.DS_Store
+*.pyc
+*.sw*
+*~
+*.class
+target/*
