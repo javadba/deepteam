@@ -4,5 +4,6 @@ Members:
 * Emerson Verrier
 * James Arana
 * Stephen Boesch
+* Sushil Kumar
 
 
