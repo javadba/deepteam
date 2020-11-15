@@ -1,9 +1,8 @@
 ## Final Project for the Deep Team 
 
 Members:
-* Emerson Verrier
-* James Arana
-* Stephen Boesch
-* Sushil Kumar
-
+* Emerson Verrier everrier@utexas.edu  
+* James Arana     jamesarana@utexas.edu
+* Stephen Boesch  javadba@gmail.com
+* Sushil Kumar     skoundinyan@gmail.com
 
