@@ -24,6 +24,7 @@ class HockeyPlayer:
         """
         all_players = ['adiumy', 'amanda', 'beastie', 'emule', 'gavroche', 'gnu', 'hexley', 'kiki', 'konqi', 'nolok', 'pidgin', 'puffy', 'sara_the_racer', 'sara_the_wizard', 'suzanne', 'tux', 'wilber', 'xue']
         self.kart = all_players[np.random.choice(len(all_players))]
+
     
     def act(self, image, player_info):
         """

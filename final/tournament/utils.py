@@ -1,6 +1,9 @@
 import pystk
 import numpy as np
+import torchvision.transforms.functional as TF
+import statistics
 
+TRACK_OFFSET = 15
 
 class Player:
     def __init__(self, player, team=0):
@@ -41,8 +44,15 @@ class Tournament:
         self.k.start()
         self.k.step()
 
+
+    @staticmethod
+    def _to_image(x, proj, view):
+        p = proj @ view @ np.array(list(x) + [1])
+        return np.clip(np.array([p[0] / p[-1], -p[1] / p[-1]]), -1, 1)
+
     def play(self, save=None, max_frames=50):
         state = pystk.WorldState()
+        track = pystk.Track()
         if save is not None:
             import PIL.Image
             import os
@@ -53,9 +63,22 @@ class Tournament:
             print('\rframe %d' % t, end='\r')
 
             state.update()
+            #print(state.soccer.ball.location)
+            #print(state.soccer.goal_line)
+
+            #goal_line = False
+            #opposing_goal = state.soccer.goal_line[:-1]
+            #goal_target = []
+            #if goal_line == True:
+             #   goal_target = [statistics.mean([opposing_goal[0][0][0], opposing_goal[0][1][0]]), statistics.mean([opposing_goal[0][0][1], opposing_goal[0][1][1]]),statistics.mean([opposing_goal[0][0][2], opposing_goal[0][1][2]]), ]
 
             list_actions = []
             for i, p in enumerate(self.active_players):
+                kart = state.players[i].kart
+                aim_point_world = state.soccer.ball.location
+                proj = np.array(state.players[i].camera.projection).T
+                view = np.array(state.players[i].camera.view).T
+                aim_point_image = self._to_image(aim_point_world, proj, view)
                 player = state.players[i]
                 image = np.array(self.k.render_data[i].image)
                 
@@ -68,6 +91,9 @@ class Tournament:
 
                 if save is not None:
                     PIL.Image.fromarray(image).save(os.path.join(save, 'player%02d_%05d.png' % (i, t)))
+                    dest = os.path.join(save, 'player%02d_%05d' % (i, t))
+                    with open(dest + '.csv', 'w') as f:
+                        f.write('%0.1f,%-0.1f' % tuple(aim_point_image))
 
             s = self.k.step(list_actions)
             if not s:  # Game over
@@ -79,6 +105,8 @@ class Tournament:
                 dest = os.path.join(save, 'player%02d' % i)
                 output = save + '_player%02d.mp4' % i
                 subprocess.call(['ffmpeg', '-y', '-framerate', '10', '-i', dest + '_%05d.png', output])
+
+
         if hasattr(state, 'soccer'):
             return state.soccer.score
         return state.soccer_score
