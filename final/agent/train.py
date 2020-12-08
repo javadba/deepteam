@@ -20,6 +20,7 @@ def train(args):
     Your code here, modify your HW4 code
 
     """
+    dataPath = args.path
     import torch
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     model = model.to(device)
@@ -32,20 +33,20 @@ def train(args):
     import inspect
 
     transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
-    train_data = load_data('drive_data', transform=transform, num_workers=args.num_workers)
+    train_data = load_data(dataPath, transform=transform, num_workers=args.num_workers)
     global_step = 0
 
     for epoch in range(args.num_epoch):
         model.train()
         losses = []
-        for img, label in train_data:
-            img, label = img.to(device), label.to(device)
+        for img, labelvisible in train_data:
+            img, labelvisible = img.to(device), labelvisible[0].to(device)
             pred = model(img)
-            loss_val = loss(pred, label)
+            loss_val = loss(pred, labelvisible)
             if train_logger is not None:
                 train_logger.add_scalar('loss', loss_val, global_step)
                 if global_step % 10 == 0:
-                    log(train_logger, img, label, pred, global_step)
+                    log(train_logger, img, labelvisible, pred, global_step)
             optimizer.zero_grad()
             loss_val.backward()
             optimizer.step()
@@ -76,6 +77,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--log_dir', default='logs')
     # Put custom arguments here
+    parser.add_argument('-p', '--path',type=str,default='onscreen20k')
     parser.add_argument('-n', '--num_epoch', type=int, default=50)
     parser.add_argument('-w', '--num_workers', type=int, default=4)
     parser.add_argument('-lr', '--learning_rate', type=float, default=1e-3)
