@@ -1,4 +1,4 @@
-from final.agent.dense_transforms import Compose, ColorJitter, RandomHorizontalFlip, ToTensor
+from . dense_transforms import Compose, ColorJitter, RandomHorizontalFlip, ToTensor
 from .planner import Planner, save_model
 from .planner import spatial_argmax
 import torch
