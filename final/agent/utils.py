@@ -7,7 +7,7 @@ from . import dense_transforms
 
 RESCUE_TIMEOUT = 30
 TRACK_OFFSET = 15
-DATASET_PATH = 'drive_data'
+DATASET_PATH = 'oneone2500z'
 
 
 class SuperTuxDataset(Dataset):
@@ -16,10 +16,14 @@ class SuperTuxDataset(Dataset):
         from glob import glob
         from os import path
         self.data = []
+        k=0
         for f in glob(path.join(dataset_path, '*.csv')):
             i = Image.open(f.replace('.csv', '.png'))
             i.load()
-            self.data.append((i, np.loadtxt(f, dtype=np.float32, delimiter=',')))
+            self.data.append((i, np.loadtxt(f, dtype=np.float32, delimiter=',')[-1:]))
+            k += 1
+            if k>20000:
+              break
         self.transform = transform
 
     def __len__(self):
