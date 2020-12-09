@@ -25,21 +25,21 @@ class Planner(torch.nn.Module):
             _conv += conv_block(c, h)
             h = c
 
-        self._conv = torch.nn.Sequential(*_conv, torch.nn.Conv2d(h, 1, 1))
-        # self.classifier = torch.nn.Linear(h, 2)
-        # self.classifier = torch.nn.Conv2d(h, 1, 1)
+        self._conv = torch.nn.Sequential(*_conv)#, torch.nn.Conv2d(h, 1, 1))
+        self.classifier = torch.nn.Linear(h, 1)
+        #self.classifier = torch.nn.Conv2d(h, 1, 1)
 
-    def forward(self, img):
+    def forward(self, img, apply_sigmoid=True):
         """
         Your code here
         Predict the aim point in image coordinate, given the supertuxkart image
         @img: (B,3,96,128)
-        return (B,2)
+        return (B,1)
         """
         x = self._conv(img)
-        return spatial_argmax(x[:, 0])
-        # return self.classifier(x.mean(dim=[-2, -1]))
-
+        z = torch.sigmoid(self.classifier(x.mean(dim=[-2, -1]))) if apply_sigmoid else self.classifier(x.mean(dim=[-2, -1]))
+        return z
+        # return torch.cat([loc, z], dim=1)
         # takes the raw training image
         # run through semantic segmentation
         # extract peaks identified from output of semantic segmentation
@@ -50,7 +50,7 @@ def save_model(model):
     from torch import save
     from os import path
     if isinstance(model, Planner):
-        return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), 'planner.th'))
+        return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), 'detector.th'))
     raise ValueError("model type '%s' not supported!" % str(type(model)))
 
 
@@ -58,8 +58,9 @@ def load_model():
     from torch import load
     from os import path
     r = Planner()
-    r.load_state_dict(load(path.join(path.dirname(path.abspath(__file__)), 'planner.th'), map_location='cpu'))
+    r.load_state_dict(load(path.join(path.dirname(path.abspath(__file__)), 'detector.th'), map_location='cpu'))
     return r
+
 if __name__ == '__main__':
     from .controller import control
     from .utils import PyTux
