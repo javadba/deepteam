@@ -1,3 +1,4 @@
+from final.agent.dense_transforms import Compose, ColorJitter, RandomHorizontalFlip, ToTensor
 from .planner import Planner, save_model
 from .planner import spatial_argmax
 import torch
@@ -33,15 +34,23 @@ def train(args):
 
     import inspect
 
-    transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
-    train_data = load_data(args.path, transform=transform, num_workers=args.num_workers)
+    transforms= Compose([ColorJitter(0.2, 0.5, 0.5, 0.2), RandomHorizontalFlip(), ToTensor()])
+    # transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
+    print(f'Loading from {args.path}..')
+    train_data = load_data(args.path, transform=transforms, num_workers=args.num_workers)
     global_step = 0
 
+    batch= 0
+    printBatch = 10
+    avg_loss = 9999.
     for epoch in range(args.num_epoch):
+        
         model.train()
         losses = []
         acc = []
         for img, label in train_data:
+            if batch % printBatch == 1:
+                print(f'epoch {epoch} batch={batch} avg_loss={avg_loss}')
             img, label = img.to(device), label.to(device)
             pred = model(img, apply_sigmoid=False)
             accuracy = ((pred>0).long() == label).detach().cpu().numpy()
@@ -91,7 +100,7 @@ if __name__ == '__main__':
     parser.add_argument('-w', '--num_workers', type=int, default=4)
     parser.add_argument('-lr', '--learning_rate', type=float, default=1e-3)
     parser.add_argument('-c', '--continue_training', action='store_true')
-    parser.add_argument('-t', '--transform',
-                        default='Compose([ColorJitter(0.2, 0.5, 0.5, 0.2), RandomHorizontalFlip(), ToTensor()])')
+    # parser.add_argument('-t', '--transform', default='Compose([ToTensor()])')
+    parser.add_argument('-t', '--transform',type=str)
     args = parser.parse_args()
     train(args)
