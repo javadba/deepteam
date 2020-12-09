@@ -63,7 +63,7 @@ def train(args):
                     #log(train_logger, img, label, pred, global_step)
 
             optimizer.zero_grad()
-            loss_val.backwªard()
+            loss_val.backward()
             optimizer.step()
             global_step += 1
             losses.append(loss_val.detach().cpu().numpy())
