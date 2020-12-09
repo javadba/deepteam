@@ -18,7 +18,6 @@ def train(args):
         train_logger = tb.SummaryWriter(path.join(args.log_dir, 'train'))
     """
     Your code here, modify your HW4 code
-
     """
     import torch
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -35,7 +34,7 @@ def train(args):
     import inspect
 
     transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
-    train_data = load_data('oneone2500z', transform=transform, num_workers=args.num_workers)
+    train_data = load_data(args.path, transform=transform, num_workers=args.num_workers)
     global_step = 0
 
     for epoch in range(args.num_epoch):
@@ -87,6 +86,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--log_dir', default='logs')
     # Put custom arguments here
+    parser.add_argument('-p', '--path')
     parser.add_argument('-n', '--num_epoch', type=int, default=50)
     parser.add_argument('-w', '--num_workers', type=int, default=4)
     parser.add_argument('-lr', '--learning_rate', type=float, default=1e-3)
