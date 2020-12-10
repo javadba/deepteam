@@ -18,8 +18,12 @@ class SuperTuxDataset(Dataset):
         from os import path
         self.data = []
         k=0
-        for f in glob(path.join(dataset_path, '*.csv')):
+        cntr = 0
+        LoadCntr = 100
+        for i,f in enumerate(glob(path.join(csv_path, '*.csv'))):
             fn = f"{dataset_path}/{f[f.rfind('/')+1:].replace('.csv', '.png')}"
+            if i % LoadCntr == 0:
+                print(f'Loading file[{i}] {fn} ..')
             i = Image.open(fn)
             i.load()
             self.data.append((i, np.loadtxt(f, dtype=np.float32, delimiter=',')[-1:]))

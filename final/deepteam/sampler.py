@@ -4,6 +4,10 @@ from pathlib import Path
 from shutil import copyfile, rmtree
 import numpy as np
 
+# Example command line:
+#   python -m agent.sampler /data/deepteam/quads-1x1-50k-meta /data/deepteam/quads-1x1-50k-samples 1000 20 15 15 15 15 10 10
+#
+
 inDir= sys.argv[1]
 outDir = sys.argv[2]
 print(f'Reading from {inDir} and writing to {outDir}') #  and filtering out for y<{maxy}')
@@ -21,9 +25,15 @@ totalFiles = int(sys.argv[3])
 NumQuads = 7
 quads = [int(sys.argv[i]) for i in range(4,4+NumQuads)]
 pcts = [ quads[i]/sum(quads) for i in range(len(quads))]
-numFiles = [pct * totalFiles for pct in pcts]
+numFiles = [int(pct * totalFiles) for pct in pcts]
 
 filesPerQuad = [parseQuads(f'{inDir}/quads{i}.txt') for i in range(7)]
+nFilesPerQuad = [len(fq) for fq in filesPerQuad]
+
+for i in range(len(nFilesPerQuad)):
+    if nFilesPerQuad[i] < numFiles[i]:
+        print(f'WARN: we do not have enough images for quadrant[{i}] (requested={numFiles[i]}) so resetting to {nFilesPerQuad[i]}')
+        numFiles[i] = nFilesPerQuad[i]
 
 fileNames = [np.random.choice(filesPerQuad[i], size=int(numFiles[i]),replace=False)
                     for i in range(len(quads))]
@@ -39,7 +49,7 @@ with open(metafn,'w') as metaf:
         with open(fn,'w') as f:
             f.write('\n'.join(fileNames[i]))
         cnt+= len(fileNames[i])
-    msg=f'Total filenames written: {cnt}'
+    msg=f'Total filenames written:j {cnt}'
     print(msg)
     metaf.write(msg + '\n')
 print(f'Wrote summary to {metafn}')
@@ -49,7 +59,8 @@ print(f'Copying csvs from {inDir} to {outDir} ..')
 fcnt = 0
 for files in fileNames:
     for fn in files:
-        copyfile(f"{inDir}/{fn}", f"{outDir}/{fn}")
+        fp = fn[fn.rfind('/')+1:]
+        copyfile(fn, f"{outDir}/{fp}")
         fcnt+=1
     print(f'Progress: {fcnt} files copied..')
     

@@ -4,10 +4,14 @@ from pathlib import Path
 from shutil import copyfile, rmtree
 import numpy as np
 
+# Example command line:
+#   python -m agent.gencsv /data/deepteam/oneone50k /data/deepteam/quads-1x1-50k-meta  False 5000
+#
+
 inDir= sys.argv[1]
 outDir = sys.argv[2]
-maxFiles = int(sys.argv[3]) if len(sys.argv)>=4 else sys.maxsize
-copyImgs = sys.argv[4].lower()=='true' if len(sys.argv)>=5 else True
+copyImgs = sys.argv[3].lower()=='true' if len(sys.argv)>=4 else True
+maxFiles = int(sys.argv[4]) if len(sys.argv)>=5 else sys.maxsize
 
 print(f'Reading from {inDir} and writing to {outDir}') #  and filtering out for y<{maxy}')
 if False:
