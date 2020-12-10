@@ -5,7 +5,7 @@ from shutil import copyfile, rmtree
 import numpy as np
 
 # Example command line:
-#   python -m agent.gencsv /data/deepteam/oneone50k /data/deepteam/quads-1x1-50k-meta  False 5000
+#   python -m agent.gencsv /data/deepteam/oneone50k /data/deepteam/quads-1x1-50k-meta50k False
 #
 
 inDir= sys.argv[1]

@@ -5,7 +5,7 @@ from shutil import copyfile, rmtree
 import numpy as np
 
 # Example command line:
-#   python -m agent.sampler /data/deepteam/quads-1x1-50k-meta /data/deepteam/quads-1x1-50k-samples 1000 20 15 15 15 15 10 10
+#   python -m agent.sampler /data/deepteam/quads-1x1-50k-meta50k /data/deepteam/quads-1x1-50k-samples-5k 5000 20 15 15 15 15 10 10
 #
 
 inDir= sys.argv[1]

@@ -9,7 +9,7 @@ from . import dense_transforms
 import torch.nn.functional as F
 
 # Example command line:
-#   python -m agent.train -p /data/deepteam/quads-1x1-50k -v /data/deepteam/quads-1x1-50k-samples
+#   python -m agent.train -p /data/deepteam/quads-1x1-50k -v /data/deepteam/quads-1x1-50k-samples-5k
 #
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -38,7 +38,8 @@ def train(args):
 
     import inspect
 
-    transforms= Compose([ColorJitter(0.2, 0.5, 0.5, 0.2), RandomHorizontalFlip(), ToTensor()])
+    # transforms= Compose([ColorJitter(0.2, 0.5, 0.5, 0.2), RandomHorizontalFlip(), ToTensor()])
+    transforms= Compose([RandomHorizontalFlip(), ToTensor()])
     # transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
     print(f'Loading csvs from {args.csvpath} and imgs from {args.path} ..')
     train_data = load_data2(args.path, args.csvpath, transform=transforms, num_workers=args.num_workers)
