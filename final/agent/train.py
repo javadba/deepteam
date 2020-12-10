@@ -4,7 +4,7 @@ from .planner import spatial_argmax
 import torch
 import torch.utils.tensorboard as tb
 import numpy as np
-from .utils import load_data
+from .utils import load_data2
 from . import dense_transforms
 import torch.nn.functional as F
 
@@ -36,8 +36,8 @@ def train(args):
 
     transforms= Compose([ColorJitter(0.2, 0.5, 0.5, 0.2), RandomHorizontalFlip(), ToTensor()])
     # transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
-    print(f'Loading from {args.path}..')
-    train_data = load_data(args.path, transform=transforms, num_workers=args.num_workers)
+    print(f'Loading imgs from {args.path} and csvs from {args.csvpath}..')
+    train_data = load_data2(args.path, args.csvpath, transform=transforms, num_workers=args.num_workers)
     global_step = 0
 
     batch= 0
@@ -96,6 +96,7 @@ if __name__ == '__main__':
     parser.add_argument('--log_dir', default='logs')
     # Put custom arguments here
     parser.add_argument('-p', '--path')
+    parser.add_argument('-v', '--csvpath')
     parser.add_argument('-n', '--num_epoch', type=int, default=50)
     parser.add_argument('-w', '--num_workers', type=int, default=4)
     parser.add_argument('-lr', '--learning_rate', type=float, default=1e-3)

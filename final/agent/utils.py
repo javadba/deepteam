@@ -7,17 +7,20 @@ from . import dense_transforms
 RESCUE_TIMEOUT = 30
 TRACK_OFFSET = 15
 DATASET_PATH = '/content/drive/MyDrive/2x2x1250z'
+CSV_PATH = '/content/drive/MyDrive/2x2x1250z'
 
 
 class SuperTuxDataset(Dataset):
-    def __init__(self, dataset_path=DATASET_PATH, transform=dense_transforms.ToTensor()):
+    def __init__(self, dataset_path=DATASET_PATH, transform=dense_transforms.ToTensor(),
+                 csv_path=CSV_PATH, ):
         from PIL import Image
         from glob import glob
         from os import path
         self.data = []
         k=0
         for f in glob(path.join(dataset_path, '*.csv')):
-            i = Image.open(f.replace('.csv', '.png'))
+            fn = f"{dataset_path}/{f[f.rfind('/')+1:].replace('.csv', '.png')}"
+            i = Image.open(fn)
             i.load()
             self.data.append((i, np.loadtxt(f, dtype=np.float32, delimiter=',')[-1:]))
             k += 1
@@ -36,4 +39,8 @@ class SuperTuxDataset(Dataset):
 
 def load_data(dataset_path=DATASET_PATH, transform=dense_transforms.ToTensor(), num_workers=0, batch_size=128):
     dataset = SuperTuxDataset(dataset_path, transform=transform)
+    return DataLoader(dataset, num_workers=num_workers, batch_size=batch_size, shuffle=True, drop_last=True)
+
+def load_data2(dataset_path=DATASET_PATH, csv_path=CSV_PATH, transform=dense_transforms.ToTensor(), num_workers=0, batch_size=128):
+    dataset = SuperTuxDataset(dataset_path, transform=transform, csv_path=csv_path)
     return DataLoader(dataset, num_workers=num_workers, batch_size=batch_size, shuffle=True, drop_last=True)
