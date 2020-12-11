@@ -45,7 +45,7 @@ for i,fn in ((i,fn) for (i,fn) in enumerate(glob(f'{inDir}/*.csv')) if i<maxFile
         
         ofn = f'{outDir}/{fn}'
         with open(ofn, 'w') as of:
-            of.write(f'{str(x)},{str(y)},')
+            of.write(f'{str(x)},{str(y)},{str((1-offscreen(x,y)))},')
             quads = [qr[1](x,y) for qr in quadrules]
             for i,q in ((i,q) for (i,q) in enumerate(quads) if q):
                 quadfiles[i].append(f'{outDir}/{fn}')
