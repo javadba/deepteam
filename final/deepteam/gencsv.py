@@ -5,7 +5,8 @@ from shutil import copyfile, rmtree
 import numpy as np
 
 # Example command line:
-#   python -m agent.gencsv /data/deepteam/oneone50k /data/deepteam/quads-1x1-50k-meta50k False
+#   python -m deepteam.gencsv /data/deepteam/oneone50k /data/deepteam/quads-1x1-50k-meta50k False
+#   python -m deepteam.gencsv /data/deepteam/fulldata /data/deepteam/fulldata-meta False
 #
 
 inDir= sys.argv[1]
@@ -34,9 +35,10 @@ for i,fn in ((i,fn) for (i,fn) in enumerate(glob(f'{inDir}/*.csv')) if i<maxFile
     with open(fn,'r') as f:
         fn = fn[fn.rfind('/')+1:]
         lines = [ll.strip() for ll in f.readlines()]
+        # print(f'lines(0) for {fn} = {lines[0]}')
         x,y = [float(z)
                for ll in lines
-                   for z in ll.split(',')]
+                   for z in ll.split(',')[:2]]
         if offscreen(x,y):
             x = -1
             y = -1

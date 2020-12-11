@@ -19,7 +19,7 @@ class SuperTuxDataset(Dataset):
         self.data = []
         k=0
         cntr = 0
-        LoadCntr = 100
+        LoadCntr = 1000
         for i,f in enumerate(glob(path.join(csv_path, '*.csv'))):
             fn = f"{dataset_path}/{f[f.rfind('/')+1:].replace('.csv', '.png')}"
             if i % LoadCntr == 0:
