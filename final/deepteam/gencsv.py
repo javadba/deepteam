@@ -12,8 +12,8 @@ import numpy as np
 
 inDir= sys.argv[1]
 outDir = sys.argv[2]
-copyImgs = sys.argv[3].lower()=='true' if len(sys.argv)>=4 else True
-useOnscreen = sys.argv[4].lower()=='true' if len(sys.argv)>=5 else False
+useOnscreen = sys.argv[3].lower()=='true' if len(sys.argv)>=4 else False
+copyImgs = sys.argv[4].lower()=='true' if len(sys.argv)>=5 else True
 maxFiles = int(sys.argv[5]) if len(sys.argv)>=6 else sys.maxsize
 
 print(f'Reading from {inDir} and writing to {outDir}') #  and filtering out for y<{maxy}')
