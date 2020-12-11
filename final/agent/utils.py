@@ -4,6 +4,8 @@ from torch.utils.data import Dataset, DataLoader
 import torchvision.transforms.functional as TF
 from . import dense_transforms
 
+LABEL_NAMES = [0., 1.]
+
 RESCUE_TIMEOUT = 30
 TRACK_OFFSET = 15
 DATASET_PATH = '/content/drive/MyDrive/2x2x1250z'
@@ -26,7 +28,10 @@ class SuperTuxDataset(Dataset):
                 print(f'Loading file[{i}] {fn} ..')
             i = Image.open(fn)
             i.load()
-            self.data.append((i, np.loadtxt(f, dtype=np.float32, delimiter=',')[-1:]))
+            label = np.loadtxt(f,delimiter=',')[2]
+            label_id = LABEL_NAMES.index(label)
+            # self.data.append((i, np.loadtxt(f, dtype=np.float32, delimiter=',')[-1:]))
+            self.data.append((i, label_id)) # np.loadtxt(f, dtype=np.float32, delimiter=',')[-1:]))
             k += 1
             if k>20000:
               break
