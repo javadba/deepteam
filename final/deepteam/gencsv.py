@@ -12,7 +12,8 @@ import numpy as np
 inDir= sys.argv[1]
 outDir = sys.argv[2]
 copyImgs = sys.argv[3].lower()=='true' if len(sys.argv)>=4 else True
-maxFiles = int(sys.argv[4]) if len(sys.argv)>=5 else sys.maxsize
+useOnscreen = sys.argv[4].lower()=='true' if len(sys.argv)>=5 else False
+maxFiles = int(sys.argv[5]) if len(sys.argv)>=6 else sys.maxsize
 
 print(f'Reading from {inDir} and writing to {outDir}') #  and filtering out for y<{maxy}')
 if False:
@@ -20,15 +21,21 @@ if False:
 Path(outDir).mkdir(parents=True,exist_ok=True)
 FarY = -0.3
 offscreen =  lambda x,y: int(abs(x)>=0.999) #  or y>0.5)
-quadrules = [
-    ['offscreen', offscreen],
-    ['nearcenterx-fary', lambda x,y: int(not offscreen(x,y) and abs(x) <= 0.2 and y <= FarY )],
-    ['offcenterx-fary',  lambda x,y: int(not offscreen(x,y) and abs(x)>0.2 and abs(x) <= 0.4 and y <= FarY)],
-    ['offcenterx-fary',  lambda x,y: int(not offscreen(x,y) and abs(x)>0.4 and y <= FarY)],
-    ['nearcenterx-neary',lambda x,y: int(not offscreen(x,y) and abs(x) <= 0.3 and y > FarY)],
-    ['offcenterx-neary', lambda x,y: int(not offscreen(x,y) and abs(x) > 0.3 and abs(x) <= 0.5 and y > FarY)],
-    ['farx-neary',       lambda x,y: int(not offscreen(x,y) and abs(x) >0.5 and y > FarY)]
-]
+
+quadrules = (
+    [
+        ['onscreen', lambda x,y:  1 - offscreen(x,y)],
+        ['offscreen', offscreen]
+    ] if useOnscreen else
+        [
+        ['offscreen', offscreen],
+        ['nearcenterx-fary', lambda x,y: int(not offscreen(x,y) and abs(x) <= 0.2 and y <= FarY )],
+        ['offcenterx-fary',  lambda x,y: int(not offscreen(x,y) and abs(x)>0.2 and abs(x) <= 0.4 and y <= FarY)],
+        ['offcenterx-fary',  lambda x,y: int(not offscreen(x,y) and abs(x)>0.4 and y <= FarY)],
+        ['nearcenterx-neary',lambda x,y: int(not offscreen(x,y) and abs(x) <= 0.3 and y > FarY)],
+        ['offcenterx-neary', lambda x,y: int(not offscreen(x,y) and abs(x) > 0.3 and abs(x) <= 0.5 and y > FarY)],
+        ['farx-neary',       lambda x,y: int(not offscreen(x,y) and abs(x) >0.5 and y > FarY)]
+])
 
 quadfiles = [[] for i in range(len(quadrules))] # [''] * 6
 for i,fn in ((i,fn) for (i,fn) in enumerate(glob(f'{inDir}/*.csv')) if i<maxFiles):

@@ -22,12 +22,12 @@ def parseQuads(fn):
 
 totalFiles = int(sys.argv[3])
 
-NumQuads = 7
+NumQuads = len(sys.argv) - 4
 quads = [int(sys.argv[i]) for i in range(4,4+NumQuads)]
 pcts = [ quads[i]/sum(quads) for i in range(len(quads))]
 numFiles = [int(pct * totalFiles) for pct in pcts]
 
-filesPerQuad = [parseQuads(f'{inDir}/quads{i}.txt') for i in range(7)]
+filesPerQuad = [parseQuads(f'{inDir}/quads{i}.txt') for i in range(NumQuads)]
 nFilesPerQuad = [len(fq) for fq in filesPerQuad]
 
 for i in range(len(nFilesPerQuad)):
@@ -49,7 +49,7 @@ with open(metafn,'w') as metaf:
         with open(fn,'w') as f:
             f.write('\n'.join(fileNames[i]))
         cnt+= len(fileNames[i])
-    msg=f'Total filenames written:j {cnt}'
+    msg=f'Total filenames written: {cnt}'
     print(msg)
     metaf.write(msg + '\n')
 print(f'Wrote summary to {metafn}')
