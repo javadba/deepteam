@@ -46,6 +46,7 @@ def train(args):
     # transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
     print(f'Loading csvs from {args.csvpath} and imgs from {args.path} ..')
     train_data = load_data2(args.path, args.csvpath, transform=transforms, num_workers=args.num_workers)
+    # valid_data = load_data2(args.validpath, args.validcsv, transform=[ToTensor()], num_workers=args.num_workers)
     global_step = 0
 
     batch= 0
@@ -115,6 +116,8 @@ if __name__ == '__main__':
     # Put custom arguments here
     parser.add_argument('-p', '--path')
     parser.add_argument('-v', '--csvpath')
+    parser.add_argument('-x', '--validpath')
+    parser.add_argument('-y', '--validcsv')
     parser.add_argument('-n', '--num_epoch', type=int, default=1)
     parser.add_argument('-w', '--num_workers', type=int, default=4)
     parser.add_argument('-lr', '--learning_rate', type=float, default=5e-4)

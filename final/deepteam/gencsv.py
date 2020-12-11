@@ -7,6 +7,7 @@ import numpy as np
 # Example command line:
 #   python -m deepteam.gencsv /data/deepteam/oneone50k /data/deepteam/quads-1x1-50k-meta50k False
 #   python -m deepteam.gencsv /data/deepteam/fulldata /data/deepteam/fulldata-meta False
+#   
 #
 
 inDir= sys.argv[1]
@@ -20,12 +21,12 @@ if False:
     rmtree(outDir, ignore_errors=True)
 Path(outDir).mkdir(parents=True,exist_ok=True)
 FarY = -0.3
-offscreen =  lambda x,y: int(abs(x)>=0.999) #  or y>0.5)
+offscreen =  lambda x,y: int(abs(x)>=0.9  or y>=0.9)
 
 quadrules = (
     [
         ['onscreen', lambda x,y:  1 - offscreen(x,y)],
-        ['offscreen', offscreen]
+        ['upperquad',  lambda x,y: int(abs(x) <= 0.9 and y <= 0.9 )],
     ] if useOnscreen else
         [
         ['offscreen', offscreen],
@@ -36,6 +37,7 @@ quadrules = (
         ['offcenterx-neary', lambda x,y: int(not offscreen(x,y) and abs(x) > 0.3 and abs(x) <= 0.5 and y > FarY)],
         ['farx-neary',       lambda x,y: int(not offscreen(x,y) and abs(x) >0.5 and y > FarY)]
 ])
+
 
 quadfiles = [[] for i in range(len(quadrules))] # [''] * 6
 for i,fn in ((i,fn) for (i,fn) in enumerate(glob(f'{inDir}/*.csv')) if i<maxFiles):
