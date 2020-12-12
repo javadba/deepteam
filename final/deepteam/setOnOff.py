@@ -12,11 +12,12 @@ import numpy as np
 
 inDir= sys.argv[1]
 outDir = inDir # sys.argv[2]
+setVal = int(sys.argv[2])
 useOnscreen = True # sys.argv[3].lower()=='true' if len(sys.argv)>=4 else False
 copyImgs = False # sys.argv[4].lower()=='true' if len(sys.argv)>=5 else True
 maxFiles = sys.maxsize # int(sys.argv[5]) if len(sys.argv)>=6 else sys.maxsize
 
-print(f'Reading from {inDir} and writing to {outDir}') #  and filtering out for y<{maxy}')
+print(f'Reading from {inDir} and writing to {outDir} and setVal={setVal}') #  and filtering out for y<{maxy}')
 if False:
     rmtree(outDir, ignore_errors=True)
 Path(outDir).mkdir(parents=True,exist_ok=True)
@@ -56,12 +57,12 @@ for i,fn in ((i,fn) for (i,fn) in enumerate(glob(f'{inDir}/*.csv')) if i<maxFile
         
         ofn = f'{outDir}/{fn}'
         with open(ofn, 'w') as of:
-            of.write(f'{str(x)},{str(y)},{str((1-offscreen(x,y)))},')
-            quads = [qr[1](x,y) for qr in quadrules]
-            for i,q in ((i,q) for (i,q) in enumerate(quads) if q):
-                quadfiles[i].append(f'{outDir}/{fn}')
-            quadstr = [str(q) for q in quads]
-            of.write(','.join(quadstr))
+            of.write(f'{str(x)},{str(y)},{setVal}') # {str((1-offscreen(x,y)))},')
+            # quads = [qr[1](x,y) for qr in quadrules]
+            # for i,q in ((i,q) for (i,q) in enumerate(quads) if q):
+            #     quadfiles[i].append(f'{outDir}/{fn}')
+            # quadstr = [str(q) for q in quads]
+            # of.write(','.join(quadstr))
         png =f"{fn[0:fn.find('.')]}.png"
         if copyImgs:
             copyfile(f"{inDir}/{png}",f"{outDir}/{png}")

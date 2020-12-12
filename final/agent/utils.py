@@ -33,8 +33,8 @@ class SuperTuxDataset(Dataset):
             # self.data.append((i, np.loadtxt(f, dtype=np.float32, delimiter=',')[-1:]))
             self.data.append((i, label_id)) # np.loadtxt(f, dtype=np.float32, delimiter=',')[-1:]))
             k += 1
-            if k>20000:
-              break
+            # if k>20000:
+            #   break
         self.transform = transform
 
     def __len__(self):

@@ -41,8 +41,8 @@ def train(args):
     import inspect
 
     # transforms= Compose([ColorJitter(0.2, 0.5, 0.5, 0.2), RandomHorizontalFlip(), ToTensor()])
-    # transforms= Compose([RandomHorizontalFlip(), ToTensor()])
-    transforms= Compose([ToTensor()])
+    transforms= Compose([RandomHorizontalFlip(), ToTensor()])
+    # transforms= Compose([ToTensor()])
     # transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
     print(f'Loading csvs from {args.csvpath} and imgs from {args.path} ..')
     train_data = load_data2(args.path, args.csvpath, transform=transforms, num_workers=args.num_workers)
