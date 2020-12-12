@@ -11,7 +11,7 @@ class RandomHorizontalFlip(object):
     def __call__(self, image, *args):
         if random.random() < self.flip_prob:
             image = F.hflip(image)
-            args = tuple(np.array([point[0]], dtype=point.dtype) for point in args)
+            args = tuple(np.array([-point[0], point[1]], dtype=point.dtype) for point in args)
         return (image,) + args
 
 

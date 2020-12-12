@@ -13,6 +13,7 @@ def spatial_argmax(logit):
     return torch.stack(((weights.sum(1) * torch.linspace(-1, 1, logit.size(2)).to(logit.device)[None]).sum(1),
                         (weights.sum(2) * torch.linspace(-1, 1, logit.size(1)).to(logit.device)[None]).sum(1)), 1)
 
+
 class Detector(torch.nn.Module):
     class Block(torch.nn.Module):
         def __init__(self, n_input, n_output, kernel_size=3, stride=2):
@@ -29,8 +30,11 @@ class Detector(torch.nn.Module):
         def forward(self, x):
             return F.relu(self.b3(self.c3(F.relu(self.b2(self.c2(F.relu(self.b1(self.c1(x)))))))) + self.skip(x))
 
-    def __init__(self, layers=[16, 32, 64, 128], n_output_channels=1, kernel_size=3):
+    def __init__(self, layers=[16, 32, 64, 128], n_output_channels=2, kernel_size=3):
         super().__init__()
+        self.input_mean = torch.Tensor([0.3521554, 0.30068502, 0.28527516])
+        self.input_std = torch.Tensor([0.18182722, 0.18656468, 0.15938024])
+
         L = []
         c = 3
         for l in layers:
@@ -43,10 +47,11 @@ class Detector(torch.nn.Module):
         z = self.network(x)
         return F.sigmoid(self.classifier(z.mean(dim=[2, 3])))
 
+
 def save_model(model):
     from torch import save
     from os import path
-    if isinstance(model, Detector):
+    if isinstance(model, Planner):
         return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), 'detector.th'))
     raise ValueError("model type '%s' not supported!" % str(type(model)))
 
@@ -64,12 +69,12 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
 
 
-    def test_detector(args):
+    def test_planner(args):
         # Load model
-        detector = load_model().eval()
+        planner = load_model().eval()
         pytux = PyTux()
         for t in args.track:
-            steps, how_far = pytux.rollout(t, control, planner=detector, max_frames=1000, verbose=args.verbose)
+            steps, how_far = pytux.rollout(t, control, planner=planner, max_frames=1000, verbose=args.verbose)
             print(steps, how_far)
         pytux.close()
 
